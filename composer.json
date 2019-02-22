@@ -1,0 +1,12 @@
+{
+    "name": "arnaud-hours/query-facet",
+    "type": "wordpress-plugin",
+    "description": "Generate facets from a WP_Query",
+    "keywords": [
+        "query",
+        "wp_query",
+        "wordpress",
+        "facet",
+        "plugin"
+    ]
+}
