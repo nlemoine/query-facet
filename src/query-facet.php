@@ -1,12 +1,6 @@
 <?php
 
-/*
- * Plugin Name: Query Facet
- * Description: Generate facets from a WP_Query.
- * Author: AdFab
- * Author URI: https://adfab.fr
- * Version: 1.0.0
- */
+namespace HelloNico\QueryFacets;
 
 /**
  * @see examples.php for some examples
@@ -16,45 +10,45 @@ class QueryFacet
     const TYPE_TAXONOMY = 'taxonomy';
     const TYPE_META = 'meta';
     const TYPE_COLUMN = 'column';
-    
+
     /**
      * the wp_query on wich we want to get the facets
-     * 
+     *
      * @var \WP_Query
      */
     protected $query;
-    
+
     /**
      * all the facets we want to get from the $query
-     * 
+     *
      * @var array
      */
     protected $facets;
-    
+
     /**
      * @var \wpdb
      */
     protected $wpdb;
-    
+
     /**
      * @var array
      */
     protected $calculatedFacets;
-    
+
     /**
      * used on filters to remember on wich current facet we need to work
-     * 
+     *
      * @var string
      */
     protected $currentFacet;
-    
+
     public function __construct()
     {
         global $wpdb;
         $this->wpdb = $wpdb;
         $this->facets = [];
     }
-    
+
     /**
      * Set the \WP_Query, already with filters, but not yet loaded
      *
@@ -64,10 +58,10 @@ class QueryFacet
     {
         $this->query = $query;
     }
-    
+
     /**
      * Generate facets by executing clones of the $query with the right filters
-     * 
+     *
      * @param bool $applyFilters wether to apply all the filters to the wp_query
      * @return array
      */
@@ -77,10 +71,10 @@ class QueryFacet
             return $this->calculatedFacets;
         }
         $this->calculatedFacets = [];
-        
+
         add_filter('posts_request', [$this, 'postsRequest']);
         add_filter('posts_clauses', [$this, 'postsClauses']);
-        
+
         foreach ($this->facets as $facet) {
             $query = clone $this->query;
             $query->set('no_found_rows', true);
@@ -94,19 +88,19 @@ class QueryFacet
             }
             $query->get_posts();
         }
-        
+
         remove_filter('posts_clauses', [$this, 'postsClauses']);
         remove_filter('posts_request', [$this, 'postsRequest']);
-        
+
         if ($applyFilters) {
             foreach ($this->facets as $facet) {
                 $this->filter($this->query, $facet);
             }
         }
-        
+
         return $this->calculatedFacets;
     }
-    
+
     /**
      * @param \WP_Query $query
      * @param array $facet [type, name, value]
@@ -117,11 +111,11 @@ class QueryFacet
             $facet['callable']($query, $facet);
             return;
         }
-        
+
         if (is_null($facet['value'])) {
             return;
         }
-        
+
         if (SELF::TYPE_TAXONOMY === $facet['type']) {
             $taxQuery = $query->get('tax_query');
             if (!is_array($taxQuery)) {
@@ -160,7 +154,7 @@ class QueryFacet
         }
         throw new \Exception('Unkown facet type: ' . $facet['type']);
     }
-    
+
     /**
      * @param string $taxonomy
      * @param mixed $value
@@ -178,7 +172,7 @@ class QueryFacet
             'callable' => $callable
         ];
     }
-    
+
     /**
      * @param string $meta from the wp_postmeta table
      * @param mixed $value
@@ -196,7 +190,7 @@ class QueryFacet
             'callable' => $callable
         ];
     }
-    
+
     /**
      * @param string $column from the wp_posts table
      * @param mixed $value
@@ -214,7 +208,7 @@ class QueryFacet
             'callable' => $callable
         ];
     }
-    
+
     /**
      * Prevent the query to run
      * Get all the possible values for a facet instead
@@ -227,7 +221,7 @@ class QueryFacet
         $this->calculatedFacets[$this->currentFacet['name']] = $this->wpdb->get_results($request);
         return '';
     }
-    
+
     /**
      * @param array $clauses
      * @return array

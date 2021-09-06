@@ -1,6 +1,6 @@
 {
     "name": "arnaud-hours/query-facet",
-    "type": "wordpress-plugin",
+    "type": "library",
     "description": "Generate facets from a WP_Query",
     "keywords": [
         "query",
@@ -8,5 +8,10 @@
         "wordpress",
         "facet",
         "plugin"
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "HelloNico\\QueryFacets": "src/"
+        }
+    }
 }
