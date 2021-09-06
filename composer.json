@@ -1,5 +1,5 @@
 {
-    "name": "arnaud-hours/query-facet",
+    "name": "hellonico/query-facets",
     "type": "library",
     "description": "Generate facets from a WP_Query",
     "keywords": [
